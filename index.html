@@ -17,11 +17,13 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; }
 
         body {
+            /* --- 背景图片设置 --- */
             background-image: url('bg.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             background-repeat: no-repeat;
+
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -29,12 +31,13 @@
             padding: 20px;
         }
 
+        /* 加载遮罩 */
         #loadingOverlay {
             display: none;
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(10px);
             z-index: 9999;
             flex-direction: column;
@@ -54,16 +57,18 @@
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* --- 毛玻璃卡片效果 --- */
         .card {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.4);
+
             width: 100%;
             max-width: 380px;
             padding: 45px 28px 85px;
             border-radius: 32px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
             text-align: center;
             position: relative;
             display: none;
@@ -73,8 +78,8 @@
             position: absolute;
             bottom: 25px;
             right: 28px;
-            max-width: 130px;
-            opacity: 0.9;
+            max-width: 135px;
+            opacity: 0.95;
         }
 
         .hero-section { margin-bottom: 35px; }
@@ -113,25 +118,45 @@
         }
 
         .welcome-msg { color: var(--text-sub); font-size: 22px; margin-bottom: 30px; }
-        #resNameBold { color: var(--text-main); font-weight: 900; font-size: 28px; border-bottom: 3px solid var(--primary); }
-        .seat-num { font-size: 58px; font-weight: 900; color: var(--success); display: block; }
+        #resNameBold { color: var(--text-main); font-weight: 900; font-size: 32px; border-bottom: 3px solid var(--primary); }
+        .seat-num { font-size: 62px; font-weight: 900; color: var(--success); display: block; }
 
         .btn-map { background: var(--accent); }
         .btn-schedule { background: var(--text-main); }
 
+        /* --- 地图弹出层 (已更新为图片居中) --- */
         .modal {
             display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.92); backdrop-filter: blur(12px); justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.95); backdrop-filter: blur(15px);
+            /* 核心居中代码 */
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
         .modal-content {
-            max-width: 80vh;
+            max-width: 85vh; /* 旋转后高度变宽度，所以参考视口高度 */
             max-height: 90vw;
             border-radius: 12px;
-            transform: rotate(90deg);
+            transform: rotate(90deg); /* 保持旋转 */
             object-fit: contain;
-            transition: transform 0.3s ease;
         }
-        .modal-tip { position: absolute; bottom: 50px; color: #cbd5e1; font-size: 14px; border: 1px solid rgba(255,255,255,0.3); padding: 10px 25px; border-radius: 25px; }
+
+        /* 退出查看按钮 */
+        .close-btn {
+            position: absolute;
+            bottom: 40px;
+            background: var(--error);
+            color: white;
+            border: none;
+            padding: 10px 35px;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+            z-index: 2100;
+        }
 
         .schedule-list { text-align: left; margin: 25px 0; max-height: 380px; overflow-y: auto; }
         .schedule-item { display: flex; padding: 16px 0; border-bottom: 1px dashed rgba(0,0,0,0.08); align-items: center; }
@@ -149,12 +174,12 @@
 
     <div id="loadingOverlay">
         <div class="spinner"></div>
-        <p style="font-weight: 600; letter-spacing: 1px;">正在查询...</p>
+        <p style="font-weight: 600; letter-spacing: 1px;">签到中...</p>
     </div>
 
     <div id="signinPage" class="card fade-in" style="display: block;">
         <div class="hero-section">
-            <img src="main_title.png" alt="主标题" class="hero-main-img">
+            <img src="main_title.png" alt="群雄聚力" class="hero-main-img">
             <span class="hero-subtitle">太平洋寿险辽宁分公司2025-2026年度峰会<br>暨二季度冲刺启动会</span>
             <span class="hero-label">签到确认 · SIGN IN</span>
         </div>
@@ -169,21 +194,21 @@
     <div id="resultPage" class="card fade-in">
         <p class="welcome-msg">欢迎您，<span id="resNameBold">--</span></p>
         <div style="background: rgba(16, 185, 129, 0.1); padding: 40px 15px; border-radius: 28px; margin-bottom: 35px; border: 1px solid rgba(16, 185, 129, 0.2);">
-            <span style="font-size: 16px; color: #166534; display: block; margin-bottom: 15px; font-weight: 700;">您的会议座次</span>
+            <span style="font-size: 16px; color: #166534; display: block; margin-bottom: 15px; font-weight: 700;">26日 | 表彰&晚宴座次：</span>
             <span class="seat-num" id="resSeat">--</span>
         </div>
         <button class="btn-map" onclick="openMap()">查看现场座次分布图</button>
-        <button class="btn-schedule" onclick="showPage('schedulePage')">查看大会日程</button>
+        <button class="btn-schedule" onclick="showDirect('schedulePage')">查看大会日程</button>
         <span class="reset-link" onclick="showDirect('signinPage')">重新查询</span>
         <img src="logo.png" alt="Logo" class="card-logo">
     </div>
 
     <div id="schedulePage" class="card fade-in">
-        <h2 style="font-size: 22px; font-weight: 800; color: var(--text-main); margin-bottom: 23px;">会议流程</h2>
+        <h2 style="font-size: 22px; font-weight: 800; color: var(--text-main); margin-bottom: 20px;">大会日程</h2>
         <div class="schedule-list">
             <div class="schedule-item"><span class="time">14:00 前</span><span class="event">报道签到</span></div>
             <div class="schedule-item"><span class="time">14:40-15:21</span><span class="event">峰会开场</span></div>
-            <div class="schedule-item"><span class="time">15:21-17:00</span><span class="event">表彰</span></div>
+            <div class="schedule-item"><span class="time">15:21-17:00</span><span class="event">表彰环节</span></div>
             <div class="schedule-item"><span class="time">17:00-17:15</span><span class="event">2026-2027峰会章程</span></div>
             <div class="schedule-item"><span class="time">17:15-17:30</span><span class="event">35周年活动仪式</span></div>
             <div class="schedule-item"><span class="time">17:30-18:00</span><span class="event">休息</span></div>
@@ -193,9 +218,9 @@
         <img src="logo.png" alt="Logo" class="card-logo">
     </div>
 
-    <div id="mapModal" class="modal" onclick="closeMap()">
-        <img src="seat_map.png" class="modal-content" alt="桌位分布图">
-        <div class="modal-tip">点击任意处关闭</div>
+    <div id="mapModal" class="modal">
+        <img src="seat_map.png" class="modal-content" alt="座次分布图">
+        <button class="close-btn" onclick="closeMap()">退出查看</button>
     </div>
 
     <script>
@@ -250,6 +275,7 @@
             }, 1200);
         }
 
+        // 修改：显式设置为 flex 以匹配居中样式
         function openMap() { document.getElementById('mapModal').style.display = 'flex'; }
         function closeMap() { document.getElementById('mapModal').style.display = 'none'; }
 
