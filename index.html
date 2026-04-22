@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>2025年东北分公司总结会</title>
     <style>
         :root {
@@ -17,13 +17,11 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; }
 
         body {
-            /* --- 背景图片设置 --- */
             background-image: url('bg.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             background-repeat: no-repeat;
-
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -31,19 +29,14 @@
             padding: 20px;
         }
 
-        /* 加载遮罩 */
         #loadingOverlay {
             display: none;
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(10px);
             z-index: 9999;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
+            flex-direction: column; justify-content: center; align-items: center; color: white;
         }
 
         .spinner {
@@ -57,63 +50,30 @@
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- 毛玻璃卡片效果 --- */
         .card {
             background: rgba(255, 255, 255, 0.78);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.4);
-
-            width: 100%;
-            max-width: 380px;
-            padding: 45px 28px 85px;
-            border-radius: 32px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            position: relative;
-            display: none;
+            width: 100%; max-width: 380px; padding: 45px 28px 85px;
+            border-radius: 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+            text-align: center; position: relative; display: none;
         }
 
-        .card-logo {
-            position: absolute;
-            bottom: 25px;
-            right: 28px;
-            max-width: 135px;
-            opacity: 0.95;
-        }
-
+        .card-logo { position: absolute; bottom: 25px; right: 28px; max-width: 135px; opacity: 0.95; }
         .hero-section { margin-bottom: 35px; }
         .hero-main-img { width: 85%; height: auto; margin: 0 auto 20px; display: block; }
-
-        .hero-subtitle {
-            color: var(--text-main);
-            font-size: 15px;
-            margin-bottom: 12px;
-            font-weight: 800;
-            display: block;
-            line-height: 1.5;
-            letter-spacing: 0.5px;
-        }
-
-        .hero-label {
-            color: var(--primary);
-            letter-spacing: 4px;
-            font-size: 14px;
-            font-weight: 700;
-            display: block;
-        }
+        .hero-subtitle { color: var(--text-main); font-size: 20px; margin-bottom: 12px; font-weight: 800; display: block; line-height: 1.5; letter-spacing: 0.5px; }
+        .hero-label { color: var(--primary); letter-spacing: 4px; font-size: 14px; font-weight: 700; display: block; }
 
         input {
-            display: block; width: 100%; padding: 18px;
-            font-size: 18px;
-            border: 2px solid rgba(0, 0, 0, 0.05);
+            display: block; width: 100%; padding: 18px; font-size: 18px; border: 2px solid rgba(0, 0, 0, 0.05);
             border-radius: 18px; outline: none; background: rgba(255, 255, 255, 0.8); margin-bottom: 15px; text-align: center;
         }
 
         button {
             display: block; width: 100%; padding: 18px; background: var(--primary); color: white;
-            font-size: 20px;
-            font-weight: 700; border: none; border-radius: 18px; cursor: pointer;
+            font-size: 20px; font-weight: 700; border: none; border-radius: 18px; cursor: pointer;
             box-shadow: 0 10px 20px -5px rgba(37,99,235,0.4); margin-bottom: 14px;
         }
 
@@ -124,48 +84,52 @@
         .btn-map { background: var(--accent); }
         .btn-schedule { background: var(--text-main); }
 
-        /* --- 地图弹出层 (已更新为图片居中) --- */
+        /* --- 2. 核心修改：全新地图弹窗结构 --- */
         .modal {
             display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); backdrop-filter: blur(15px);
-            /* 核心居中代码 */
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            max-width: 85vh; /* 旋转后高度变宽度，所以参考视口高度 */
-            max-height: 90vw;
-            border-radius: 12px;
-            transform: rotate(90deg); /* 保持旋转 */
-            object-fit: contain;
+            background: rgba(0,0,0,0.98); backdrop-filter: blur(15px);
+            flex-direction: column; /* 上下排列内容 */
         }
 
-        /* 退出查看按钮 */
+        /* 顶部标题区 */
+        .modal-header {
+            height: 60px; display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 18px; font-weight: 800; letter-spacing: 2px;
+        }
+
+        /* 中间图片区：支持内部滚动/缩放 */
+        .map-viewer {
+            flex: 1; /* 占据中间所有空间 */
+            width: 100%; overflow: auto; /* 允许滚动 */
+            display: flex; align-items: center; justify-content: center;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .modal-content {
+            width: 90vh; height: 95vw; /* 适配旋转 */
+            transform: rotate(90deg);
+            object-fit: contain;
+            flex-shrink: 0; /* 禁止被压缩 */
+        }
+
+        /* 底部按钮区：固定在最下方 */
+        .modal-footer {
+            height: 100px; display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(to top, black, transparent);
+        }
+
         .close-btn {
-            position: absolute;
-            bottom: 40px;
-            background: var(--error);
-            color: white;
-            border: none;
-            padding: 10px 35px;
-            border-radius: 25px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
-            z-index: 2100;
+            background: var(--error); color: white; border: none;
+            padding: 12px 60px; border-radius: 30px; font-size: 16px;
+            font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
         }
 
         .schedule-list { text-align: left; margin: 25px 0; max-height: 380px; overflow-y: auto; }
         .schedule-item { display: flex; padding: 16px 0; border-bottom: 1px dashed rgba(0,0,0,0.08); align-items: center; }
         .time { font-weight: 800; color: var(--primary); min-width: 105px; font-size: 15px; }
         .event { color: var(--text-main); font-size: 15px; font-weight: 600; }
-
         .error-msg { color: var(--error); font-size: 14px; margin-bottom: 15px; display: none; font-weight: 700; }
         .reset-link { margin-top: 25px; font-size: 14px; color: var(--text-sub); cursor: pointer; display: inline-block; font-weight: 600; }
-
         .fade-in { animation: fadeIn 0.5s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -219,8 +183,13 @@
     </div>
 
     <div id="mapModal" class="modal">
-        <img src="seat_map.png" class="modal-content" alt="座次分布图">
-        <button class="close-btn" onclick="closeMap()">退出查看</button>
+        <div class="modal-header">表彰及晚宴座位图</div>
+        <div class="map-viewer">
+            <img src="seat_map.png" class="modal-content" alt="座次分布图">
+        </div>
+        <div class="modal-footer">
+            <button class="close-btn" onclick="closeMap()">退出查看</button>
+        </div>
     </div>
 
     <script>
@@ -252,9 +221,6 @@
             window.scrollTo(0,0);
         }
 
-        function showPage(pageId) { showDirect(pageId); }
-        function hideError() { document.getElementById('errorMsg').style.display = 'none'; }
-
         function handleSignin() {
             const input = document.getElementById('nameInput');
             const name = input.value.replace(/\s+/g, "");
@@ -268,16 +234,15 @@
                     document.getElementById('resNameBold').innerText = name;
                     document.getElementById('resSeat').innerText = seatData[name];
                     error.style.display = 'none';
-                    document.querySelectorAll('.card').forEach(p => p.style.display = 'none');
-                    document.getElementById('resultPage').style.display = 'block';
+                    showDirect('resultPage');
                 } else { error.style.display = 'block'; }
                 loader.style.display = 'none';
             }, 1200);
         }
 
-        // 修改：显式设置为 flex 以匹配居中样式
-        function openMap() { document.getElementById('mapModal').style.display = 'flex'; }
-        function closeMap() { document.getElementById('mapModal').style.display = 'none'; }
+        function openMap() { document.getElementById('mapModal').style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        function closeMap() { document.getElementById('mapModal').style.display = 'none'; document.body.style.overflow = 'auto'; }
+        function hideError() { document.getElementById('errorMsg').style.display = 'none'; }
 
         document.getElementById('nameInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') handleSignin();
