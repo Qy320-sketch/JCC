@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2025年东北分公司总结会</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #10b981;
+            --error: #ef4444;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --accent: #6366f1;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; }
+
+        body {
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #loadingOverlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .spinner {
+            width: 45px; height: 45px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            width: 100%;
+            max-width: 380px;
+            padding: 45px 28px 85px;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            position: relative;
+            display: none;
+        }
+
+        .card-logo {
+            position: absolute;
+            bottom: 25px;
+            right: 28px;
+            max-width: 130px;
+            opacity: 0.9;
+        }
+
+        .hero-section { margin-bottom: 35px; }
+        .hero-main-img { width: 85%; height: auto; margin: 0 auto 20px; display: block; }
+
+        .hero-subtitle {
+            color: var(--text-main);
+            font-size: 15px;
+            margin-bottom: 12px;
+            font-weight: 800;
+            display: block;
+            line-height: 1.5;
+            letter-spacing: 0.5px;
+        }
+
+        .hero-label {
+            color: var(--primary);
+            letter-spacing: 4px;
+            font-size: 14px;
+            font-weight: 700;
+            display: block;
+        }
+
+        input {
+            display: block; width: 100%; padding: 18px;
+            font-size: 18px;
+            border: 2px solid rgba(0, 0, 0, 0.05);
+            border-radius: 18px; outline: none; background: rgba(255, 255, 255, 0.8); margin-bottom: 15px; text-align: center;
+        }
+
+        button {
+            display: block; width: 100%; padding: 18px; background: var(--primary); color: white;
+            font-size: 20px;
+            font-weight: 700; border: none; border-radius: 18px; cursor: pointer;
+            box-shadow: 0 10px 20px -5px rgba(37,99,235,0.4); margin-bottom: 14px;
+        }
+
+        .welcome-msg { color: var(--text-sub); font-size: 22px; margin-bottom: 30px; }
+        #resNameBold { color: var(--text-main); font-weight: 900; font-size: 28px; border-bottom: 3px solid var(--primary); }
+        .seat-num { font-size: 58px; font-weight: 900; color: var(--success); display: block; }
+
+        .btn-map { background: var(--accent); }
+        .btn-schedule { background: var(--text-main); }
+
+        .modal {
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92); backdrop-filter: blur(12px); justify-content: center; align-items: center;
+        }
+        .modal-content {
+            max-width: 80vh;
+            max-height: 90vw;
+            border-radius: 12px;
+            transform: rotate(90deg);
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        .modal-tip { position: absolute; bottom: 50px; color: #cbd5e1; font-size: 14px; border: 1px solid rgba(255,255,255,0.3); padding: 10px 25px; border-radius: 25px; }
+
+        .schedule-list { text-align: left; margin: 25px 0; max-height: 380px; overflow-y: auto; }
+        .schedule-item { display: flex; padding: 16px 0; border-bottom: 1px dashed rgba(0,0,0,0.08); align-items: center; }
+        .time { font-weight: 800; color: var(--primary); min-width: 105px; font-size: 15px; }
+        .event { color: var(--text-main); font-size: 15px; font-weight: 600; }
+
+        .error-msg { color: var(--error); font-size: 14px; margin-bottom: 15px; display: none; font-weight: 700; }
+        .reset-link { margin-top: 25px; font-size: 14px; color: var(--text-sub); cursor: pointer; display: inline-block; font-weight: 600; }
+
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        <p style="font-weight: 600; letter-spacing: 1px;">正在查询...</p>
+    </div>
+
+    <div id="signinPage" class="card fade-in" style="display: block;">
+        <div class="hero-section">
+            <img src="main_title.png" alt="主标题" class="hero-main-img">
+            <span class="hero-subtitle">太平洋寿险辽宁分公司2025-2026年度峰会<br>暨二季度冲刺启动会</span>
+            <span class="hero-label">签到确认 · SIGN IN</span>
+        </div>
+        <div>
+            <input type="text" id="nameInput" placeholder="请输入姓名进行签到" autocomplete="off" onfocus="hideError()">
+            <div id="errorMsg" class="error-msg">未找到名单信息，请核对后输入</div>
+            <button id="signinBtn" onclick="handleSignin()">立即签到</button>
+        </div>
+        <img src="logo.png" alt="Logo" class="card-logo">
+    </div>
+
+    <div id="resultPage" class="card fade-in">
+        <p class="welcome-msg">欢迎您，<span id="resNameBold">--</span></p>
+        <div style="background: rgba(16, 185, 129, 0.1); padding: 40px 15px; border-radius: 28px; margin-bottom: 35px; border: 1px solid rgba(16, 185, 129, 0.2);">
+            <span style="font-size: 16px; color: #166534; display: block; margin-bottom: 15px; font-weight: 700;">您的会议座次</span>
+            <span class="seat-num" id="resSeat">--</span>
+        </div>
+        <button class="btn-map" onclick="openMap()">查看现场座次分布图</button>
+        <button class="btn-schedule" onclick="showPage('schedulePage')">查看大会日程</button>
+        <span class="reset-link" onclick="showDirect('signinPage')">重新查询</span>
+        <img src="logo.png" alt="Logo" class="card-logo">
+    </div>
+
+    <div id="schedulePage" class="card fade-in">
+        <h2 style="font-size: 22px; font-weight: 800; color: var(--text-main); margin-bottom: 23px;">会议流程</h2>
+        <div class="schedule-list">
+            <div class="schedule-item"><span class="time">14:00 前</span><span class="event">报道签到</span></div>
+            <div class="schedule-item"><span class="time">14:40-15:21</span><span class="event">峰会开场</span></div>
+            <div class="schedule-item"><span class="time">15:21-17:00</span><span class="event">表彰</span></div>
+            <div class="schedule-item"><span class="time">17:00-17:15</span><span class="event">2026-2027峰会章程</span></div>
+            <div class="schedule-item"><span class="time">17:15-17:30</span><span class="event">35周年活动仪式</span></div>
+            <div class="schedule-item"><span class="time">17:30-18:00</span><span class="event">休息</span></div>
+            <div class="schedule-item"><span class="time">18:00-20:00</span><span class="event">表彰晚宴</span></div>
+        </div>
+        <button onclick="showDirect('resultPage')">返回个人信息</button>
+        <img src="logo.png" alt="Logo" class="card-logo">
+    </div>
+
+    <div id="mapModal" class="modal" onclick="closeMap()">
+        <img src="seat_map.png" class="modal-content" alt="桌位分布图">
+        <div class="modal-tip">点击任意处关闭</div>
+    </div>
+
+    <script>
+        const seatData = {
+            "程龙新": "第1桌", "潘宇": "第1桌", "刘亚萍": "第1桌", "慕小华": "第1桌", "王敏": "第1桌", "倪红": "第1桌", "麻红娟": "第1桌", "石长娥": "第1桌", "刘红": "第1桌", "李卫华": "第1桌",
+            "谢水泉": "第2桌", "刘爽实": "第2桌", "黄海波": "第2桌", "沈文翠": "第2桌", "夏金钟": "第2桌", "孙莉萍": "第2桌", "解春丽": "第2桌", "王海艳": "第2桌", "张咏梅": "第2桌", "田馨": "第2桌",
+            "关杰": "第3桌", "盛勇": "第3桌", "魏斌": "第3桌", "朱保卫": "第3桌", "刘伟杰": "第3桌", "袁新": "第3桌", "李希英": "第3桌", "刘敏": "第3桌", "李桂娟": "第3桌", "赵丽丽": "第3桌",
+            "颜妮": "第4桌", "陈岗": "第4桌", "安桂荣": "第4桌", "王秀珍": "第4桌", "王巍巍": "第4桌", "孟祥君": "第4桌", "闫丹": "第4桌", "李锦平": "第4桌", "郭惠秋": "第4桌", "韩义": "第4桌",
+            "宋国庆": "第5桌", "陈慧富": "第5桌", "年洪英": "第5桌", "范金立": "第5桌", "王忠洪": "第5桌", "张瑜": "第5桌", "康秀丽": "第5桌", "陆秀杰": "第5桌", "姜黎莉": "第5桌", "王娟": "第5桌",
+            "于江洋": "第6桌", "刘凤兰": "第6桌", "高延玲": "第6桌", "喻明伟": "第6桌", "刘志娟": "第6桌", "李东明": "第6桌", "佟健": "第6桌", "吉文红": "第6桌", "袁绍丽": "第6桌", "徐连平": "第6桌",
+            "回国强": "第7桌", "张东敏": "第7桌", "刘丽": "第7桌", "邹吉国": "第7桌", "于秀敏": "第7桌", "王静荣": "第7桌", "李月红": "第7桌", "孙正芳": "第7桌", "刘秀萍": "第7桌", "于丽娜": "第7桌",
+            "王志东": "第8桌", "李影": "第8桌", "张桂艳": "第8桌", "张其斌": "第8桌", "李琳": "第8桌", "陈丽萍": "第8桌", "梁淑文": "第8桌", "李强": "第8桌", "董桂红": "第8桌", "金搏涵": "第8桌",
+            "李龙滨": "第9桌", "原恺": "第9桌", "李希举": "第9桌", "马玉兰": "第9桌", "杨柳": "第9桌", "曹萌": "第9桌", "耿灵": "第9桌", "冯丽萍": "第9桌", "平安静": "第9桌", "陈亚娟": "第9桌",
+            "李龙阁": "第10桌", "崔红": "第10桌", "潘晶": "第10桌", "叶辉": "第10桌", "李洪霞": "第10桌", "刘会英": "第10桌", "石丽丽": "第10桌", "田静辉": "第10桌", "李微": "第10桌", "葛新": "第10桌",
+            "蔡诗林": "第11桌", "李贺": "第11桌", "滕岩": "第11桌", "陈连杰": "第11桌", "杜娟": "第11桌", "孙利": "第11桌", "顾复军": "第11桌", "孙树花": "第11桌", "宋吉清": "第11桌", "徐文华": "第11桌",
+            "刘泽平": "第12桌", "董珊珊": "第12桌", "王天昌": "第12桌", "寇光明": "第12桌", "吴素平": "第12桌", "祁琪": "第12桌", "刘晓兰": "第12桌", "胡冬梅": "第12桌", "李臣": "第12桌", "许淑华": "第12桌",
+            "魏海波": "第13桌", "车丽华": "第13桌", "郭浩楠": "第13桌", "白桂元": "第13桌", "王丽梅": "第13桌", "来庆华": "第13桌", "王惠": "第13桌", "吴宏艳": "第13桌", "鞠红香": "第13桌", "刘明晶": "第13桌",
+            "崔仁杰": "第14桌", "胡长泉": "第14桌", "刘瑞艳": "第14桌", "李红辉": "第14桌", "回书颖": "第14桌", "丁一": "第14桌", "彭少斌": "第14桌", "邢晓娟": "第14桌", "罗宇": "第14桌", "孙荔": "第14桌",
+            "吴涛": "第15桌", "汤连祎": "第15桌", "翁冬菊": "第15桌", "于丽": "第15桌", "王秀丽": "第15桌", "卢艳": "第15桌", "陈佩新": "第15桌", "姜明兴": "第15桌", "于淼": "第15桌", "魏巍": "第15桌",
+            "梁美思": "第16桌", "马壮": "第16桌", "张玉琦": "第16桌", "付楚佳": "第16桌", "姜焕宇": "第16桌", "刘玮": "第16桌", "侯艳华": "第16桌", "韩剑楠": "第16桌", "许娜": "第16桌", "林萍": "第16桌",
+            "沈洁": "第17桌", "董亚亮": "第17桌", "吴丽娜": "第17桌", "王迪": "第17桌", "刘佳慧": "第17桌", "杜晓东": "第17桌", "赵嘉朕": "第17桌", "王钧智": "第17桌", "刘威": "第17桌", "胡楠": "第17桌",
+            "张晓明": "第18桌", "黄晴晴": "第18桌", "侯丽北": "第18桌", "王波": "第18桌", "雷振球": "第18桌", "翟翟": "第18桌", "李昊宸": "第18桌", "徐新": "第18桌", "马琳": "第18桌", "石坚": "第18桌",
+            "鹿健": "第19桌", "李鑫": "第19桌", "王诗元": "第19桌", "邓佳": "第19桌", "张玉": "第19桌", "杨起孟": "第19桌", "樊旭东": "第19桌", "刘静静": "第19桌", "魏明丽": "第19桌", "宝智国": "第19桌"
+        };
+
+        function showDirect(pageId) {
+            document.querySelectorAll('.card').forEach(p => p.style.display = 'none');
+            document.getElementById(pageId).style.display = 'block';
+            window.scrollTo(0,0);
+        }
+
+        function showPage(pageId) { showDirect(pageId); }
+        function hideError() { document.getElementById('errorMsg').style.display = 'none'; }
+
+        function handleSignin() {
+            const input = document.getElementById('nameInput');
+            const name = input.value.replace(/\s+/g, "");
+            const error = document.getElementById('errorMsg');
+            const loader = document.getElementById('loadingOverlay');
+
+            if (name === "") { alert("请输入姓名"); return; }
+            loader.style.display = 'flex';
+            setTimeout(() => {
+                if (seatData[name]) {
+                    document.getElementById('resNameBold').innerText = name;
+                    document.getElementById('resSeat').innerText = seatData[name];
+                    error.style.display = 'none';
+                    document.querySelectorAll('.card').forEach(p => p.style.display = 'none');
+                    document.getElementById('resultPage').style.display = 'block';
+                } else { error.style.display = 'block'; }
+                loader.style.display = 'none';
+            }, 1200);
+        }
+
+        function openMap() { document.getElementById('mapModal').style.display = 'flex'; }
+        function closeMap() { document.getElementById('mapModal').style.display = 'none'; }
+
+        document.getElementById('nameInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSignin();
+        });
+    </script>
+</body>
+</html>
